@@ -3,21 +3,31 @@ from hashlib import new #deepcopy
 import heapq as pq #priority queue
 
 class puzzlesolver:
+    '''
+    methods to calls:
+    constructor, solve
+    attributes:
+    puzzle: initial puzzle
+    mincost: total puzzle solve length
+    answer: moves to answer
+    '''
     dxy = [(1,0),(0,1),(-1,0),(0,-1)] #move directions
-    X = 0 #initial X value
     puzzle = [] #initial puzzle
     mincost = 1e9+7 #minimum cost, initialized at 1e9+7
     answer = [] #answer to puzzle, empty if unsolvable
 
     def __init__(self, filename):
         self.getPuzzle(filename)
-        print(self.solve())
 
     def getPuzzle(self,filename): #gets puzzle from test folder
         temp_puzzle = []
-        with open("./test/"+filename) as f:
+        with open(filename) as f:
             lines = f.readlines()
+            if len(lines)!=4:
+                return
             for line in lines:
+                if len(line.split())!=4:
+                    return
                 temp_puzzle.append([int(i) for i in line.split()])
         self.puzzle = temp_puzzle
 
@@ -53,11 +63,10 @@ class puzzlesolver:
     def validIndex(self, x, y):
         return (0<=x<4 and 0<=y<4)
     
-    def solve(self): #main puzzle solver
+    def solve(self): #main puzzle solver, returns kurang value
         kurang = self.calcKurang()
-        print("Nilai fungsi kurang = " + str(kurang))
         if kurang%2!=0:
-            return "Puzzle tidak dapat diselesaikan"
+            return kurang
         
         cost = self.calcCost(self.puzzle)
         heap = [] #current total cost, depth, puzzle, moves to puzzle
@@ -84,8 +93,4 @@ class puzzlesolver:
                 newPath.append((dx,dy))
                 cost = self.calcCost(newPuzzle)
                 pq.heappush(heap,(cost+depth+1, depth+1, newPuzzle, newPath))
-        return "Puzzle berhasil diselesaikan"
-
-pz = puzzlesolver("1.txt")
-print(pz.answer)
-print(pz.mincost)
+        return kurang

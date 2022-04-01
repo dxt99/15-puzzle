@@ -15,6 +15,10 @@ class puzzlesolver:
     puzzle = [] #initial puzzle
     mincost = 1e9+7 #minimum cost, initialized at 1e9+7
     answer = [] #answer to puzzle, empty if unsolvable
+    kurang = [0 for _ in range(16)] #nilai fungsi kurang tiap entri
+    visited = []
+    X = 0 #nilai X
+    total = 0
 
     def __init__(self, filename):
         self.getPuzzle(filename)
@@ -35,12 +39,15 @@ class puzzlesolver:
         flat = [i for j in self.puzzle for i in j]
         cost = 0
         for i in range(len(flat)):
+            temp = 0
             if flat[i]==0 and (((i//4)%2 == 0 and i%2==1) or (i//4)%2 == 1 and i%2 == 0):
-                cost += 1 # X
+                self.X = 1
             for j in range(i+1,len(flat)):
-                if (flat[i]>flat[j] and flat[j]!=0):
-                    cost+=1
-        return cost
+                if ((flat[i]>flat[j] or flat[i]==0) and flat[j]!=0):
+                    cost += 1
+                    temp += 1
+            self.kurang[flat[i]] = temp
+        return cost + self.X
 
     def isSolved(self): #checks whether puzzle is solved
         return self.puzzle == [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]]
@@ -74,6 +81,8 @@ class puzzlesolver:
 
         while len(heap)>0:
             curCost, depth, curPuzzle, path = pq.heappop(heap)
+            self.visited.append(curPuzzle)
+            self.total += 1
             if (curCost>self.mincost): #bound
                 continue
             if (curCost == depth): #answer found
@@ -92,5 +101,7 @@ class puzzlesolver:
                 newPath = copy.deepcopy(path)
                 newPath.append((dx,dy))
                 cost = self.calcCost(newPuzzle)
+                if (newPuzzle in self.visited):
+                    continue
                 pq.heappush(heap,(cost+depth+1, depth+1, newPuzzle, newPath))
         return kurang

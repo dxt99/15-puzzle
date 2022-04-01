@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkinter import filedialog as fd
 from puzzlesolver import *
 from hashlib import new #deepcopy
+from tkinter.messagebox import showinfo
 
 ### NON-UI VARIABLES
 # input
@@ -14,6 +15,14 @@ config = ""
 puzzle_start = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]]
 zero_pos = (3,3)
 moves = []
+
+# puzzle solving details
+kurang = []
+kurangSum = 0
+X = []
+mincost = 0
+duration = 0
+total = 0
 
 ### BUTTONS
 # file select button
@@ -34,10 +43,9 @@ def select_file():
 
 #call puzzle solver
 def solve():
-    global puzzle_start
-    global zero_pos
-    global moves
-    global puzzle_labels
+    global puzzle_start, zero_pos, moves, puzzle_labels
+    global kurang, kurangSum, X, mincost, duration, total
+
     if (len(config)==0):
         status_label.config(text = "File config tidak valid!")
         return
@@ -46,17 +54,38 @@ def solve():
         status_label.config(text = "File config tidak valid!")
         return
     status_label.config(text = "Solving...")
-    kurang = psolver.solve()
-    if kurang%2!=0:
+    # CALL FUCNTION
+    start = time.time()
+    kurangSum = psolver.solve()
+    end = time.time()
+
+    duration = end - start
+    if kurangSum%2!=0:
         status_label.config(text = "Tidak ada solusi!")
-        puzzle_start = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]]
+        puzzle_start = copy.deepcopy(psolver.puzzle)
         moves = []
     else:
         status_label.config(text = "Solusi ditemukan!")
-        puzzle_start = psolver.puzzle
-        moves = psolver.answer
-    kurang_label.config(text = "Nilai fungsi kurang: " + str(kurang))
+        puzzle_start = copy.deepcopy(psolver.puzzle)
+        moves = copy.deepcopy(psolver.answer)
+    kurang = copy.deepcopy(psolver.kurang)
+    X = psolver.X
+    mincost = psolver.mincost
+    total = psolver.total
+    details_button.place(x=20, y=110)
     resetPuzzle()
+
+def details():
+    info = "Execution time: "+str(duration*1000)+" ms\n"
+    info += "Jumlah simpul yang dibangkitkan: " + str(total) + "\n"
+    info += "Jumlah fungsi kurang adalah " + str(kurangSum) + "\n" 
+    for i in range(1,16):
+        info += "Nilai fungsi kurang " + str(i) + ": " + str(kurang[i]) + "\n"
+    info += "Nilai fungsi kurang 16: " + str(kurang[0]) + "\n"
+    showinfo(
+        title='Solution Details',
+        message=info
+    )
 
 # reset puzzle ui
 def resetPuzzle():
@@ -150,5 +179,12 @@ reset_button = ttk.Button(
     command=resetPuzzle
 )
 reset_button.place(x=110, y=260)
+
+# reset button
+details_button = ttk.Button(
+    root,
+    text='Details',
+    command=details
+)
 
 root.mainloop()

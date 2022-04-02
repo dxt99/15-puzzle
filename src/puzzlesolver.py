@@ -20,6 +20,13 @@ class puzzlesolver:
     total = 0
 
     def __init__(self, filename):
+        self.puzzle = [] 
+        self.mincost = 1e9+7 
+        self.answer = [] 
+        self.kurang = [0 for _ in range(16)] 
+        self.visited = []
+        self.X = 0 
+        self.total = 0
         self.getPuzzle(filename)
 
     def getPuzzle(self,filename): #gets puzzle from test folder

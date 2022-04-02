@@ -56,11 +56,12 @@ def solve():
         status_label.config(text = "File config tidak valid!")
         return
     status_label.config(text = "Solving...")
+    root.update()
     # CALL FUCNTION
     start = time.time()
     kurangSum = psolver.solve()
     end = time.time()
-
+    print('done')
     duration = end - start
     if kurangSum%2!=0:
         status_label.config(text = "Tidak ada solusi!")

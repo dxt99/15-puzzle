@@ -4,7 +4,6 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog as fd
 from puzzlesolver import *
-from hashlib import new #deepcopy
 from tkinter.messagebox import showinfo
 
 ### NON-UI VARIABLES
@@ -46,6 +45,9 @@ def solve():
     global puzzle_start, zero_pos, moves, puzzle_labels
     global kurang, kurangSum, X, mincost, duration, total
 
+    animate_button.place_forget()
+    reset_button.place_forget()
+
     if (len(config)==0):
         status_label.config(text = "File config tidak valid!")
         return
@@ -68,6 +70,8 @@ def solve():
         status_label.config(text = "Solusi ditemukan!")
         puzzle_start = copy.deepcopy(psolver.puzzle)
         moves = copy.deepcopy(psolver.answer)
+        animate_button.place(x=110, y=225)
+        reset_button.place(x=110, y=260)
     kurang = copy.deepcopy(psolver.kurang)
     X = psolver.X
     mincost = psolver.mincost
@@ -170,7 +174,7 @@ animate_button = ttk.Button(
     text='Animate',
     command=animate
 )
-animate_button.place(x=110, y=225)
+
 
 # reset button
 reset_button = ttk.Button(
@@ -178,7 +182,7 @@ reset_button = ttk.Button(
     text='Reset',
     command=resetPuzzle
 )
-reset_button.place(x=110, y=260)
+
 
 # reset button
 details_button = ttk.Button(

@@ -1,5 +1,4 @@
-import copy
-from hashlib import new #deepcopy
+import copy #deepcopy
 import heapq as pq #priority queue
 
 class puzzlesolver:
@@ -25,6 +24,7 @@ class puzzlesolver:
 
     def getPuzzle(self,filename): #gets puzzle from test folder
         temp_puzzle = []
+        puzzle_set = set({})
         with open(filename) as f:
             lines = f.readlines()
             if len(lines)!=4:
@@ -33,6 +33,10 @@ class puzzlesolver:
                 if len(line.split())!=4:
                     return
                 temp_puzzle.append([int(i) for i in line.split()])
+                for i in line.split():
+                    puzzle_set.add(int(i))
+        if puzzle_set!={i for i in range(16)}:
+            return
         self.puzzle = temp_puzzle
 
     def calcKurang(self): #calculates sum of KURANG(i) + X
@@ -48,9 +52,6 @@ class puzzlesolver:
                     temp += 1
             self.kurang[flat[i]] = temp
         return cost + self.X
-
-    def isSolved(self): #checks whether puzzle is solved
-        return self.puzzle == [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]]
     
     def calcCost(self, puzzle): #calculates cost
         flat = [i for j in puzzle for i in j]
